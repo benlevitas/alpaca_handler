@@ -3,18 +3,23 @@ from typing import Dict, List
 from alpaca_trade_api.entity import Position
 import alpaca_trade_api as alpaca
 
-from src.config import HEADERS_LIVE_API, HEADERS_PAPER_API
-from src.alpaca_data import AlpacaData
+from alpaca_data import AlpacaData
 
 logger = logging.getLogger()
 
 
 class AlpacaPortfolio:
-    def __init__(self, staging: bool = True):
+    def __init__(self, key: str, secret_key: str, staging: bool = True):
+        headers = {
+            'key_id': key,
+            'secret_key': secret_key,
+            'api_version': 'v2'
+        }
         if staging:
-            self._alpaca_api = alpaca.REST(**HEADERS_PAPER_API)
+            headers['base_url'] = 'https://api.alpaca.markets'
         else:
-            self._alpaca_api = alpaca.REST(**HEADERS_LIVE_API)
+            headers['base_url'] = 'https://paper-api.alpaca.markets'
+        self._alpaca_api = alpaca.REST(**headers)
 
     @property
     def is_market_open(self) -> property:

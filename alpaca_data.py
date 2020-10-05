@@ -4,8 +4,6 @@ import pandas as pd
 from datetime import datetime
 import alpaca_trade_api as alpaca
 
-from src.config import HEADERS_LIVE_API
-
 logger = logging.getLogger()
 
 
@@ -32,14 +30,21 @@ class AlpacaData:
         return 'open' or 'closed' according to current market status
 
     """
-    def __init__(self, symbols: list, time_frame: str = '1D'):
+    def __init__(self, key: str, secret_key: str, symbols: list, time_frame: str = '1D'):
         """
         :param symbols: The list of symbols
         :param time_frame: Time frame between bars
         """
-        self._symbols = list(map(lambda x:x.upper(), symbols))
-        self._time_frame = time_frame # TODO check the time_frame is valid
-        self._live_api = alpaca.REST(**HEADERS_LIVE_API)
+        self._symbols = list(map(lambda x: x.upper(), symbols))
+        self._time_frame = time_frame  # TODO check the time_frame is valid
+
+        headers = {
+            'key_id': key,
+            'secret_key': secret_key,
+            'base_url': 'https://api.alpaca.markets',
+            'api_version': 'v2'
+        }
+        self._live_api = alpaca.REST(**headers)
         self._market_status = self.is_market_open
 
     @property
@@ -82,6 +87,7 @@ class AlpacaData:
         """
         Gets full bar sets for relevant symbols.
         :param limit: amount of days to look at (including current day)
+        :param columns: relevant df columns
         :return: (dict) Full bar sets
         """
         bar_set = self._live_api.get_barset(self._symbols, self._time_frame, limit=limit)
