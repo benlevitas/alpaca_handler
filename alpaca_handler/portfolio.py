@@ -3,12 +3,12 @@ from typing import Dict, List
 from alpaca_trade_api.entity import Position
 import alpaca_trade_api as alpaca
 
-from alpaca_data import AlpacaData
+from alpaca_handler.data import Data
 
 logger = logging.getLogger()
 
 
-class AlpacaPortfolio:
+class Portfolio:
     def __init__(self, key: str, secret_key: str, staging: bool = True):
         headers = {
             'key_id': key,
@@ -23,7 +23,7 @@ class AlpacaPortfolio:
 
     @property
     def is_market_open(self) -> property:
-        return AlpacaData.is_market_open
+        return Data.is_market_open
 
     @property
     def positions(self) -> Dict[str, Position]:

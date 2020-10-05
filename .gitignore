@@ -1,2 +1,4 @@
 .idea/
 main_example.py
+*.egg-info
+__pycache__

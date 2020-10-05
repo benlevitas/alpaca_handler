@@ -7,7 +7,7 @@ import alpaca_trade_api as alpaca
 logger = logging.getLogger()
 
 
-class AlpacaData:
+class Data:
     """
     A class for handling Alpaca API
 
