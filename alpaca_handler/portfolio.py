@@ -49,7 +49,7 @@ class Portfolio:
             'secret_key': secret_key,
             'api_version': 'v2'
         }
-        if staging:
+        if not staging:
             headers['base_url'] = 'https://api.alpaca.markets'
         else:
             headers['base_url'] = 'https://paper-api.alpaca.markets'
