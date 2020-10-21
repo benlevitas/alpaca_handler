@@ -1,7 +1,7 @@
 import time
 import logging
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timedelta
 import alpaca_trade_api as alpaca
 
 logger = logging.getLogger()
@@ -111,13 +111,12 @@ class Data:
         :param columns: relevant df columns
         :return: Full bar sets
         """
-        bar_set = self._live_api.get_barset(self._symbols, self._time_frame, limit=limit)
-        df = bar_set.df
-        if df.index[-1].date() != datetime.now().date():
-            time.sleep(10)
-            bar_set = self._live_api.get_barset(self._symbols, self._time_frame, limit=limit)
-            df = bar_set.df
-
-        if columns:
-            df = df.loc[:, (slice(None), columns)]
-        return df
+        present = datetime.now().date()
+        past = present - timedelta(limit)
+        bars = {}
+        for symbol in self._symbols:
+            bar_set = self._live_api.polygon.historic_agg_v2(symbol, 1, 'day', past, present).df
+            if columns:
+                bar_set = bar_set.loc[:, columns]
+            bars[symbol] = bar_set
+        return bars
