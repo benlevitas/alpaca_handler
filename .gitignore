@@ -2,3 +2,5 @@
 main_example.py
 *.egg-info
 __pycache__
+build
+dist
