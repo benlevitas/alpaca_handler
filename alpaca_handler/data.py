@@ -104,7 +104,16 @@ class Data:
             time.sleep(60)
         return self._market_status
 
-    def get_bars(self, limit: int = 20, columns: list = None) -> Dict:
+    def _get_start_date(self, limit: int, start=None):
+        present = datetime.now().date()
+        if not start:
+            start = present - timedelta(limit)
+        market_days = len(self._live_api.get_calendar(str(start), str(present)))
+        if limit > market_days:
+            start = self._get_start_date(limit, start - timedelta(limit - market_days))
+        return start
+
+    def get_bars(self, limit: int = 20, columns: list = None) -> dict:
         """
         Gets full bar sets for self's symbols.
         :param limit: amount of days to pull (includes today)
@@ -112,11 +121,11 @@ class Data:
         :return: Full bar sets
         """
         present = datetime.now().date()
-        past = present - timedelta(limit)
+        start = self._get_start_date(limit)
         bars = {}
         for symbol in self._symbols:
             # TODO 1 day is static. should use self.timeframe
-            bar_set = self._live_api.polygon.historic_agg_v2(symbol, 1, 'day', past, present).df
+            bar_set = self._live_api.polygon.historic_agg_v2(symbol, 1, 'day', start, present).df
             if columns:
                 bar_set = bar_set.loc[:, columns]
             bars[symbol] = bar_set
