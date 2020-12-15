@@ -105,6 +105,12 @@ class Data:
         return self._market_status
 
     def _get_start_date(self, limit: int, start=None):
+        """
+        Deduct start date needed to reach ${limit} amount of days
+        :param limit: desired amount of days
+        :param start: estimate start date - may lower complexity
+        :return: start date
+        """
         present = datetime.now().date()
         if not start:
             start = present - timedelta(limit)
