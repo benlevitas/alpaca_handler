@@ -104,7 +104,7 @@ class Data:
             time.sleep(60)
         return self._market_status
 
-    def get_bars(self, limit: int = 20, columns: list = None) -> pd.DataFrame:
+    def get_bars(self, limit: int = 20, columns: list = None) -> Dict:
         """
         Gets full bar sets for self's symbols.
         :param limit: amount of days to pull (includes today)
@@ -115,6 +115,7 @@ class Data:
         past = present - timedelta(limit)
         bars = {}
         for symbol in self._symbols:
+            # TODO 1 day is static. should use self.timeframe
             bar_set = self._live_api.polygon.historic_agg_v2(symbol, 1, 'day', past, present).df
             if columns:
                 bar_set = bar_set.loc[:, columns]
