@@ -3,6 +3,7 @@ import logging
 import pandas as pd
 from datetime import datetime, timedelta
 import alpaca_trade_api as alpaca
+from alpaca_handler.enums import Timespans
 
 logger = logging.getLogger()
 
@@ -47,7 +48,7 @@ class Data:
         :param time_frame: Time frame between bars
         """
         self._symbols = list(map(lambda x: x.upper(), symbols))
-        self._time_frame = time_frame  # TODO check the time_frame is valid
+        self._time_frame = Timespans[time_frame]  # TODO check the time_frame is valid
 
         headers = {
             'key_id': key,
@@ -130,8 +131,7 @@ class Data:
         start = self._get_start_date(limit)
         bars = {}
         for symbol in self._symbols:
-            # TODO 1 day is static. should use self.timeframe
-            bar_set = self._live_api.polygon.historic_agg_v2(symbol, 1, 'day', start, present).df
+            bar_set = self._live_api.polygon.historic_agg_v2(symbol, 1, self._time_frame, start, present).df
             if columns:
                 bar_set = bar_set.loc[:, columns]
             bars[symbol] = bar_set
