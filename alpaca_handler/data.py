@@ -48,7 +48,7 @@ class Data:
         :param time_frame: Time frame between bars
         """
         self._symbols = list(map(lambda x: x.upper(), symbols))
-        self._time_frame = Timespans[time_frame]  # TODO check the time_frame is valid
+        self._time_frame = Timespans(time_frame).name  # TODO check the time_frame is valid
 
         headers = {
             'key_id': key,
